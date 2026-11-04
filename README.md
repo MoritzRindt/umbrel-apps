@@ -13,8 +13,7 @@ Install **FR24 Feeder**, connect a supported RTL2838 (`0bda:2838`) USB receiver,
 restart the app, then enter your existing sharing key on its protected setup page.
 Do not run two feeders with the same sharing key at the same time.
 
-The package is a hardware-test candidate. Read the verification limits below
-before installing it on an unattended receiver.
+Read the verification limits below before installing it on an unattended receiver.
 
 ## FR24 Feeder
 
@@ -44,10 +43,12 @@ python3 -m unittest discover -s moritz-fr24 -p 'test_*.py'
 bash -n moritz-fr24/exports.sh
 ```
 
-Prepared, not yet deployed or hardware-verified. Before installation, verify both
-upstream binaries start with all capabilities dropped, the receiver can claim USB,
-FR24 writes the expected monitor format and both services recover after reboot.
-Other Umbrel apps are independent of this package.
+Validated on one Raspberry Pi 4 ARM64 with a Nooelec NESDR SMArt v5: USB opens,
+aircraft are tracked, FR24 connects, native key=value status is parsed and feeding
+resumes after a real device reboot. A native Umbrel 2.0.1 update to 0.1.2 installed
+the web assets without a manual copy. Six focused Python tests pass. This does not
+prove every receiver/host combination or long-running load; verify your own
+hardware and security requirements. Other Umbrel apps are independent of this package.
 
 ## Distribution
 
