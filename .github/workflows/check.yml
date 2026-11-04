@@ -1,0 +1,28 @@
+name: Check app package
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Test setup and status API
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s moritz-fr24 -p 'test_*.py' -v
+      - name: Check USB discovery script
+        run: bash -n moritz-fr24/exports.sh
+      - name: Verify sandboxed upstream binaries
+        run: |
+          set -euo pipefail
+          decoder_image="$(awk '/image: ghcr.io\/sdr-enthusiasts\/docker-adsb-ultrafeeder@/ {print $2}' moritz-fr24/docker-compose.yml)"
+          feeder_image="$(awk '/image: ghcr.io\/sdr-enthusiasts\/docker-flightradar24@/ {print $2}' moritz-fr24/docker-compose.yml)"
+          test -n "$decoder_image"
+          test -n "$feeder_image"
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --entrypoint /usr/local/bin/readsb "$decoder_image" --version
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --entrypoint /usr/bin/fr24feed "$feeder_image" --version
