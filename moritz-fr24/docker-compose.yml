@@ -16,7 +16,7 @@ services:
       PYTHONDONTWRITEBYTECODE: "1"
     command: [python, /app/server.py]
     volumes:
-      - ${APP_DATA_DIR}/app:/app:ro
+      - ${APP_DATA_DIR}/hooks/web:/app:ro
       - ${APP_DATA_DIR}/data:/state
       - receiver_data:/run/readsb:ro
     tmpfs:
@@ -75,6 +75,7 @@ services:
     entrypoint: [/bin/sh, -c]
     command:
       - >-
+        umask 077;
         until test -s /state/fr24feed.ini; do sleep 2; done;
         exec /usr/bin/fr24feed --config-file=/state/fr24feed.ini --monitor-file=/state/monitor.json >/dev/null 2>&1
     volumes:

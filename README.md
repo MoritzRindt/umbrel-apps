@@ -33,6 +33,9 @@ collection, automatic updates and other forwarding services are not started.
 - Native feeder output is suppressed so it cannot leak a key or exact location into
   container logs. Connection state is read from the private monitor file.
 - First setup starts the waiting feeder automatically; after a key change restart the app.
+- Web assets live in `hooks/web`, which Umbrel copies during app updates. This is
+  a passive asset directory, not an executable lifecycle hook. The container
+  mounts it read-only, so updates do not require manual code copying.
 
 ## Verification
 

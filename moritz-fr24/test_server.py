@@ -9,12 +9,20 @@ import time
 import unittest
 from urllib.parse import urlencode
 
-spec = importlib.util.spec_from_file_location('server', Path(__file__).parent / 'app/server.py')
+spec = importlib.util.spec_from_file_location('server', Path(__file__).parent / 'hooks/web/server.py')
 server = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(server)
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_web_assets_are_in_umbrel_update_whitelist(self):
+        package = Path(__file__).parent
+        self.assertTrue((package / 'hooks/web/server.py').is_file())
+        self.assertTrue((package / 'hooks/web/index.html').is_file())
+        compose = (package / 'docker-compose.yml').read_text()
+        self.assertIn('${APP_DATA_DIR}/hooks/web:/app:ro', compose)
+        self.assertNotIn('${APP_DATA_DIR}/app:', compose)
+
     def test_config_is_private_and_cannot_inject_options(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
