@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FR24 Feeder</title>
+<style>
+:root{color-scheme:dark;font-family:"Avenir Next",Avenir,sans-serif;background:#111315;color:#eef0f2}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 0 0,#22313080,transparent 60%);min-height:100vh}main{max-width:800px;margin:auto;padding:48px 24px}header{display:flex;align-items:center;justify-content:space-between;gap:16px}h1{font-size:32px;letter-spacing:-1px}h2{font-size:19px;margin-top:0}p{color:#aeb7bc;line-height:1.6}.badge{border:1px solid #3b4549;border-radius:24px;padding:7px 12px;white-space:nowrap;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}article,section{border:1px solid #30373b;border-radius:16px;background:#191d20;padding:22px}article span{display:block;color:#aeb7bc;font-size:13px}article strong{display:block;margin-top:12px;font-size:26px;font-variant-numeric:tabular-nums}label{display:block;margin-bottom:10px}input{width:100%;padding:13px;border:1px solid #586268;border-radius:9px;background:#111517;color:inherit;font:inherit}button{margin-top:14px;border:0;border-radius:9px;background:#b9d9cd;color:#15251f;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #b9d9cd;outline-offset:3px}small{display:block;margin-top:14px;color:#aeb7bc;line-height:1.6}#state{margin:24px 0}footer{margin-top:24px;color:#929da4;font-size:12px}@media(max-width:520px){main{padding:24px 16px}.grid{grid-template-columns:1fr}article{display:flex;justify-content:space-between;align-items:center}article strong{margin:0}header{align-items:start;flex-direction:column}}
+</style>
+<main>
+<header><h1>FR24 Feeder</h1><span class="badge" id="feed" role="status">Status wird geladen</span></header>
+<div class="grid"><article><span>Empfänger</span><strong id="receiver">–</strong></article><article><span>Flugzeuge</span><strong id="aircraft">–</strong></article><article><span>Nachrichten gesamt</span><strong id="messages">–</strong></article></div>
+<p id="state" role="status">Verbindung wird geprüft …</p>
+<section><h2>Flightradar24 verbinden</h2><form action="/configure" method="post">
+<input type="hidden" name="csrf" value="__CSRF__">
+<label for="key">Sharing Key</label><input id="key" name="key" type="password" autocomplete="off" minlength="8" maxlength="128" pattern="[A-Za-z0-9]+" required>
+<button type="submit">Schlüssel speichern</button>
+<small>Der Schlüssel wird geschützt auf der SD-Karte gespeichert und nie angezeigt. Bei der ersten Einrichtung startet der Feeder automatisch. Nach einem Schlüsselwechsel die App in Umbrel neu starten.</small>
+</form></section>
+<footer>Community-Integration · Decoder und Feeder getrennt · Kein Zugriff auf deine Film-SSD</footer>
+</main>
+<script nonce="__CSRF__">
+async function refresh(){try{const response=await fetch('/api/status',{cache:'no-store'});if(!response.ok)throw Error();const s=await response.json();document.getElementById('receiver').textContent=s.receiver?'Online':'Wartet';document.getElementById('aircraft').textContent=s.aircraft.toLocaleString('de-DE');document.getElementById('messages').textContent=s.messages.toLocaleString('de-DE');document.getElementById('feed').textContent=s.feed==='connected'?'FR24 verbunden':'FR24 wartet';document.getElementById('state').textContent=!s.configured?'Gib deinen bestehenden Sharing Key ein.':!s.receiver?'Kein aktueller Empfang. ADS-B-Dongle anschließen und diese App in Umbrel neu starten.':s.feed==='connected'?'Dein Empfänger liefert Daten an Flightradar24.':'Schlüssel gespeichert. Die Verbindung zu Flightradar24 wird aufgebaut.';}catch{document.getElementById('state').textContent='Status vorübergehend nicht erreichbar.';}}
+refresh();setInterval(refresh,5000);
+</script>
+</html>

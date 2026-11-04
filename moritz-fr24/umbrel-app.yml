@@ -1,0 +1,26 @@
+manifestVersion: "2.0"
+id: moritz-fr24
+category: networking
+name: FR24 Feeder
+version: "0.1.0"
+tagline: Your own ADS-B receiver, feeding Flightradar24
+description: >-
+  Connect your Nooelec NESDR receiver and enter your existing Flightradar24 sharing key
+  in the protected setup page. Decoder and feeder run separately. No router port
+  forwarding is needed, and no media folders are accessed.
+
+
+  After connecting or reconnecting the USB receiver, restart this app from Umbrel.
+  This is a community integration, not an official Flightradar24 app.
+releaseNotes: ""
+developer: Community integration
+website: https://www.flightradar24.com/share-your-data
+dependencies: []
+repo: https://github.com/sdr-enthusiasts/docker-flightradar24
+support: https://github.com/sdr-enthusiasts/docker-flightradar24/issues
+port: 8754
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: Moritz

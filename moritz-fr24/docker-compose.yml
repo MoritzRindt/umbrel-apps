@@ -1,0 +1,98 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: moritz-fr24_server_1
+      APP_PORT: 8080
+
+  server:
+    image: python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: [python, /app/server.py]
+    volumes:
+      - ${APP_DATA_DIR}/app:/app:ro
+      - ${APP_DATA_DIR}/data:/state
+      - receiver_data:/run/readsb:ro
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: 2m, max-file: "2"}
+
+  receiver:
+    image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder@sha256:e1316ceea377f606c9d2c6dbe9462e14d81b93bce880e011232dba3b540c549d
+    # USB nodes are root-owned. All capabilities are dropped and no host directories are mounted.
+    user: "0:0"
+    init: true
+    restart: on-failure
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    entrypoint: [/usr/local/bin/readsb]
+    command:
+      - --device-type=rtlsdr
+      - --gain=auto
+      - --net
+      - --net-bind-address=0.0.0.0
+      - --net-bo-port=30005
+      - --net-bi-port=0
+      - --net-ri-port=0
+      - --net-ro-port=0
+      - --net-sbs-port=0
+      - --write-json=/run/readsb
+      - --quiet
+    devices:
+      - ${APP_FR24_USB_DEVICE:-/dev/null}:${APP_FR24_USB_DEVICE:-/dev/null}:rw
+    volumes:
+      - receiver_data:/run/readsb
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    healthcheck:
+      disable: true
+    logging:
+      driver: json-file
+      options: {max-size: 2m, max-file: "2"}
+
+  feeder:
+    image: ghcr.io/sdr-enthusiasts/docker-flightradar24@sha256:d1436b1f38650ddd9485be0343942026eb7837d552e587f4572065d9033f0f24
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    entrypoint: [/bin/sh, -c]
+    command:
+      - >-
+        until test -s /state/fr24feed.ini; do sleep 2; done;
+        exec /usr/bin/fr24feed --config-file=/state/fr24feed.ini --monitor-file=/state/monitor.json >/dev/null 2>&1
+    volumes:
+      - ${APP_DATA_DIR}/data:/state
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    ulimits:
+      nofile: {soft: 256, hard: 256}
+    healthcheck:
+      disable: true
+    logging:
+      driver: json-file
+      options: {max-size: 2m, max-file: "2"}
+
+volumes:
+  receiver_data:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=16m,mode=0755
