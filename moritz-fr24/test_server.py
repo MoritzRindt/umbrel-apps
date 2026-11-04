@@ -49,6 +49,19 @@ class ConfigurationTests(unittest.TestCase):
             (root / 'monitor.json').write_text('fr24feed_mon_fr24_feed_status="connected"')
             self.assertEqual(server.snapshot(root, receiver)['feed'], 'connected')
 
+    def test_native_monitor_key_value_format(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            monitor = root / 'monitor.json'
+            for value in ('connected', 'disconnected'):
+                monitor.write_text('feed_status=' + value + '\nrx_connected=1\nfr24key=hiddenKEY123\n')
+                status = server.snapshot(root, root / 'absent')
+                self.assertEqual(status['feed'], value)
+                self.assertNotIn('hiddenKEY123', json.dumps(status))
+            for invalid in ('other_feed_status=connected', 'feed_status=\nconnected', 'feed_status=connectedjunk'):
+                monitor.write_text(invalid)
+                self.assertEqual(server.snapshot(root, root / 'absent')['feed'], 'waiting')
+
     def test_http_rejects_cross_site_configuration(self):
         with tempfile.TemporaryDirectory() as directory:
             original = server.save_key

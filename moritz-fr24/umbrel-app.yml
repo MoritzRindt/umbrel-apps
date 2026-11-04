@@ -3,7 +3,7 @@ id: moritz-fr24
 category: networking
 name: FR24 Feeder
 icon: https://raw.githubusercontent.com/MoritzRindt/umbrel-apps/main/moritz-fr24/icon.svg
-version: "0.1.0"
+version: "0.1.1"
 tagline: Your own ADS-B receiver, feeding Flightradar24
 description: >-
   Connect your Nooelec NESDR receiver and enter your existing Flightradar24 sharing key
@@ -13,7 +13,7 @@ description: >-
 
   After connecting or reconnecting the USB receiver, restart this app from Umbrel.
   This is a community integration, not an official Flightradar24 app.
-releaseNotes: ""
+releaseNotes: "Correctly display connection status from the native FR24 monitor format."
 developer: Community integration
 website: https://www.flightradar24.com/share-your-data
 dependencies: []

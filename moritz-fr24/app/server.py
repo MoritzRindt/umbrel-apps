@@ -51,7 +51,7 @@ def snapshot(state=STATE, receiver=RECEIVER):
         result['monitorFresh'] = 0 <= time.time() - monitor.stat().st_mtime < 60
         if result['monitorFresh']:
             raw = monitor.read_text()
-            match = re.search(r'fr24feed_mon_fr24_feed_status[\s"=:]+([A-Za-z]+)', raw)
+            match = re.search(r'(?m)^(?:fr24feed_mon_fr24_)?feed_status[ \t]*=[ \t]*"?([A-Za-z]+)"?[ \t]*\r?$', raw)
             if match:
                 status = match[1].lower()
                 result['feed'] = status if status in ('connected', 'disconnected') else 'waiting'
