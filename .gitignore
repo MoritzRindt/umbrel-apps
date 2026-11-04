@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+moritz-fr24/data/*
+!moritz-fr24/data/.gitkeep

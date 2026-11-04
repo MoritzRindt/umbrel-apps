@@ -2,6 +2,7 @@ manifestVersion: "2.0"
 id: moritz-fr24
 category: networking
 name: FR24 Feeder
+icon: https://raw.githubusercontent.com/MoritzRindt/umbrel-apps/main/moritz-fr24/icon.svg
 version: "0.1.0"
 tagline: Your own ADS-B receiver, feeding Flightradar24
 description: >-
@@ -16,8 +17,8 @@ releaseNotes: ""
 developer: Community integration
 website: https://www.flightradar24.com/share-your-data
 dependencies: []
-repo: https://github.com/sdr-enthusiasts/docker-flightradar24
-support: https://github.com/sdr-enthusiasts/docker-flightradar24/issues
+repo: https://github.com/MoritzRindt/umbrel-apps
+support: https://github.com/MoritzRindt/umbrel-apps/issues
 port: 8754
 gallery: []
 path: ""

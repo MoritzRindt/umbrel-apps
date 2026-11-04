@@ -1,7 +1,20 @@
-# Private Umbrel App Store
+# Umbrel Community Apps
 
-Prepared for umbrelOS 2.0.1 on ARM64 Raspberry Pi 4. This directory is a standalone
-community-store package; it is not the old HomeDeck runtime.
+Community app packages for umbrelOS 2.0 and later, with an isolated ADS-B feeder.
+This integration is not affiliated with or endorsed by Flightradar24 or Umbrel.
+
+## Add this store
+
+In Umbrel's App Store, open Community App Stores and add:
+
+`https://github.com/MoritzRindt/umbrel-apps`
+
+Install **FR24 Feeder**, connect a supported RTL2838 (`0bda:2838`) USB receiver,
+restart the app, then enter your existing sharing key on its protected setup page.
+Do not run two feeders with the same sharing key at the same time.
+
+The package is a hardware-test candidate. Read the verification limits below
+before installing it on an unattended receiver.
 
 ## FR24 Feeder
 
@@ -24,19 +37,21 @@ collection, automatic updates and other forwarding services are not started.
 ## Verification
 
 ```bash
-python3 -m unittest discover -s umbrel-app-store/moritz-fr24 -p 'test_*.py'
-bash -n umbrel-app-store/moritz-fr24/exports.sh
+python3 -m unittest discover -s moritz-fr24 -p 'test_*.py'
+bash -n moritz-fr24/exports.sh
 ```
 
 Prepared, not yet deployed or hardware-verified. Before installation, verify both
 upstream binaries start with all capabilities dropped, the receiver can claim USB,
 FR24 writes the expected monitor format and both services recover after reboot.
-Plex and Home Assistant are installed independently from the official store.
+Other Umbrel apps are independent of this package.
 
 ## Distribution
 
-Umbrel community stores consume a separate Git repository with
-`umbrel-app-store.yml` at its root. Do not publish this entire private HomeDeck
-repository or put sharing keys, exact receiver coordinates or MCP tokens in the store.
-The store has not yet been published. Adding a community store is an owner action;
-the current Umbrel MCP tool set has no add-repository tool.
+This repository contains only the app-store packages. Never commit sharing keys,
+exact receiver coordinates or MCP tokens. Adding a community store is an owner
+action; the current Umbrel MCP tool set has no add-repository tool.
+
+The wrapper and package code is MIT-licensed. Upstream container images and their
+included binaries retain their respective licenses; they are downloaded directly
+from upstream registries, not redistributed in this repository.
